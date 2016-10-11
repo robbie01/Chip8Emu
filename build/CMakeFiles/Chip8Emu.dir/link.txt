@@ -1,0 +1,1 @@
+/usr/bin/c++    -Wall -Wextra -pedantic -std=c++11  -Wall -Wextra -pedantic -std=c++11 -g -g   CMakeFiles/Chip8Emu.dir/src/main.cpp.o CMakeFiles/Chip8Emu.dir/src/cpu.cpp.o  -o Chip8Emu -rdynamic -Wl,-Bstatic -lSDL2main -Wl,-Bdynamic -lSDL2 -lpthread 
