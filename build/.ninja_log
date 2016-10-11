@@ -1,5 +1,0 @@
-# ninja log v5
-1	1115	0	CMakeFiles/Chip8Emu.dir/src/cpu.cpp.o	da9488c493e58a6a
-0	1453	0	CMakeFiles/Chip8Emu.dir/src/main.cpp.o	a620f3460f51a0cc
-1454	1663	0	Chip8Emu	871a0c6ebecba06a
-0	30	0	CMakeFiles/install.util	336d3c89d78b7994
