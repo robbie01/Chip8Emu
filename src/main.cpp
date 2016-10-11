@@ -45,9 +45,9 @@ void drawGfx(SDL_Renderer *ren, array<uint8_t, 2048>& gfx) {
         SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
       else
         SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-      square->x = xline * PIXEL_SIZE;
-      square->y = yline * PIXEL_SIZE;
-      SDL_RenderDrawRect(ren, square);
+      square.x = xline * PIXEL_SIZE;
+      square.y = yline * PIXEL_SIZE;
+      SDL_RenderDrawRect(ren, &square);
     }
   }
   SDL_RenderPresent(ren);
