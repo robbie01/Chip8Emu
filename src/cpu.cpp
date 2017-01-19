@@ -221,11 +221,11 @@ int Chip8_CPU::doCycle(void) {
       BYTE x = (opcode & 0x0F00) >> 8;
       switch (opcode & 0x00FF) {
         case 0x9E: {
-          //TODO: implement
+          if (key[V[x]] != 0) pc += 2;
           break;
         }
         case 0xA1: {
-          //TODO: implement
+          if (key[V[x]] == 0) pc += 2;
           break;
         }
       }
@@ -240,7 +240,15 @@ int Chip8_CPU::doCycle(void) {
           break;
         }
         case 0x0A: {
-          //TODO: implement
+          bool pressed = false;
+          while (!pressed) {
+            for (int i = 0; i < 16; i++) {
+              if(key[i] != 0) {
+               V[x] = i;
+               pressed = true;
+              }
+            }
+          }
           break;
         }
         case 0x15: {
