@@ -1,17 +1,13 @@
-/*
- * Errors:
- * 0: ok
- * 1: arguments (too many or not enough)
- * 2: SDL
- * 3: RCA 1802 hybrid game
- */
-
 #include <ios>
 #include <string>
 #include <iostream>
+#include <iterator>
+#include <vector>
 #include <fstream>
 #include <SDL.h>
 #include "cpu.hpp"
+
+typedef unsigned char BYTE;
 
 using namespace std;
 
@@ -23,37 +19,35 @@ void logSDLError(void) {
   cerr << "SDL error: " << SDL_GetError() << endl;
 }
 
-uint8_t* fileToBytes(string filename) {
-  ifstream fl(filename.c_str(), ios_base::in | ios_base::binary);
+vector<BYTE> fileToBytes(char const* filename) {
+  ifstream fl(filename, ios_base::in | ios_base::binary);
+  fl.unsetf(ios::skipws);
   fl.seekg(0, ios::end);
-  size_t len = fl.tellg();
-  vector<uint8_t> retV(len);
-  uint8_t* ret = &ret[0];
+  ios::streampos pos = fl.tellg();
   fl.seekg(0, ios::beg);
-  fl.read((char*)ret, len);
-  fl.close();
+  vector<BYTE> ret;
+  ret.reserve(pos);
+  ret.insert(ret.begin(),
+             istream_iterator<BYTE>(fl),
+             istream_iterator<BYTE>());
   return ret;
 }
 
-void drawGfx(SDL_Renderer *ren, array<uint8_t, 2048>& gfx) {
-  SDL_Rect *square;
-  square->w = square->h = PIXEL_SIZE;
-  SDL_RenderClear(ren);
-  for (int yline = 0; yline < 32; yline++) {
-    for (int xline = 0; xline < 64; xline++) {
-      if(gfx[xline + (yline * 64)] == 1)
-        SDL_SetRenderDrawColor(ren, 255, 255, 255, 255);
-      else
-        SDL_SetRenderDrawColor(ren, 0, 0, 0, 255);
-      square.x = xline * PIXEL_SIZE;
-      square.y = yline * PIXEL_SIZE;
-      SDL_RenderDrawRect(ren, &square);
+void drawGfx(SDL_Surface *sfc, const BYTE gfx[64][32]) {
+  for (int x = 0; x < 64; x++) {
+    for (int y = 0; y < 32; y++) {
+      SDL_Rect square = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
+      if(gfx[x][y] == 1) {
+        SDL_FillRect(sfc, &square, SDL_MapRGB(sfc->format, 0xFF, 0xFF, 0xFF));
+      }
+      else {
+        SDL_FillRect(sfc, &square, SDL_MapRGB(sfc->format, 0x00, 0x00, 0x00));
+      }
     }
   }
-  SDL_RenderPresent(ren);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char* argv[]) {
   #ifndef NDEBUG
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   #endif
@@ -63,23 +57,23 @@ int main(int argc, char** argv) {
   }
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     logSDLError();
-    return 2;
+    return 1;
   }
-  SDL_Window *win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/*INPUT_GRABBED*/);
+  SDL_Window *win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/* | INPUT_GRABBED*/);
   if (win == nullptr) {
     logSDLError();
     SDL_Quit();
-    return 2;
+    return 1;
   }
-  SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-  if (ren == nullptr) {
+  SDL_Surface *sfc = SDL_GetWindowSurface(win);
+  if (sfc == nullptr) {
     SDL_DestroyWindow(win);
     logSDLError();
     SDL_Quit();
-    return 2;
+    return 1;
   }
   //TODO: input
-  uint8_t* pong = fileToBytes(argv[1]);
+  vector<BYTE> pong = fileToBytes(argv[1]);
   Chip8_CPU cpu;
   cpu.init();
   cpu.loadProgram(pong);
@@ -95,16 +89,16 @@ int main(int argc, char** argv) {
     }
     int ok = cpu.doCycle();
     if (ok == 1) {
-      cerr << "Error: RCA 1802 hybrid program." << endl;
-      return 3;
+      cerr << "Error: unknown instruction" << endl;
+      return 1;
     }
     if (cpu.drawFlag) {
-      drawGfx(ren, cpu.gfx);
+      drawGfx(sfc, cpu.gfx);
+      SDL_UpdateWindowSurface(win);
       cpu.drawFlag = false;
     }
     //SDL_Delay(1000/60);
   }
-  SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);
   SDL_Quit();
   return 0;

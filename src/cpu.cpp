@@ -1,8 +1,6 @@
 #include "cpu.hpp"
 
-using namespace std;
-
-const array<uint8_t, 80> Chip8_FontSet = {
+const BYTE Chip8_FontSet[80] = {
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
   0x20, 0x60, 0x20, 0x20, 0x70, // 1
   0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -29,84 +27,105 @@ void Chip8_CPU::init(void) {
   I = 0;
   sp = 0;
 
-  gfx.fill(0);
-  stack.fill(0);
-  V.fill(0);
-  memory.fill(0);
+  for (int i = 0; i < 64; i++) {
+    for (int j = 0; j < 32; j++) {
+      gfx[i][j] = 0;
+    }
+  }
+  for (int i = 0; i < 16; i++) {
+    stack[i] = 0;
+    V[i] = 0; //save 2 lines, save the world
+  }
+  for (int i = 0; i < 4096; i++) {
+    memory[i] = 0;
+  }
 
-  for (int i = 0; i < 80; ++i)
+  for (int i = 0; i < 80; i++) {
     memory[i] = Chip8_FontSet[i];
+  }
+
+  delay_timer = 0;
+  sound_timer = 0;
+
+  drawFlag = true;
 }
 
-void Chip8_CPU::loadProgram(uint8_t* game) {
-  for (unsigned long i = 0; i < (sizeof(game)/sizeof(game[0])); ++i)
+void Chip8_CPU::loadProgram(vector<BYTE> game) {
+  for (unsigned long i = 0; i < game.size(); i++)
     memory[i + 512] = game[i];
 }
 
 int Chip8_CPU::doCycle(void) {
   opcode = memory[pc] << 8 | memory[pc + 1];
   switch (opcode & 0xF000) {
-    case 0x0000:
-      switch (opcode & 0x00FF) {
+    case 0x0000: {
+      switch (opcode) {
         case 0x00E0: {
-          gfx.fill(0);
+          for (int i = 0; i < 64; i++) {
+            for (int j = 0; j < 32; j++) {
+              gfx[i][j] = 0;
+            }
+          }
           drawFlag = true;
           pc += 2;
           break;
         }
         case 0x00EE: {
-          --sp;
+          sp--;
           pc = stack[sp];
-          pc += 2;
           break;
-        }/*
+        }
         default: {
+          pc += 2;
           return 1;
-        }*/
+        }
       }
+      break;
+    }
     case 0x1000: {
       pc = opcode & 0x0FFF;
       break;
     }
     case 0x2000: {
-      stack[sp] = pc;
-      ++sp;
+      stack[sp] = pc + 2;
+      sp++;
       pc = opcode & 0x0FFF;
       break;
     }
     case 0x3000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       if (V[x] == (opcode & 0x00FF)) pc += 4;
+      else pc += 2;
       break;
     }
     case 0x4000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       if (V[x] != (opcode & 0x00FF)) pc += 4;
       else pc += 2;
       break;
     }
     case 0x5000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
-      uint8_t y = (opcode & 0x00F0) >> 4;
+      BYTE x = (opcode & 0x0F00) >> 8;
+      BYTE y = (opcode & 0x00F0) >> 4;
       if (V[x] == V[y]) pc += 4;
       else pc += 2;
       break;
     }
     case 0x6000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       V[x] = (opcode & 0x00FF);
       pc += 2;
       break;
     }
     case 0x7000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       V[x] += (opcode & 0x00FF);
       pc += 2;
       break;
     }
     case 0x8000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
-      uint8_t y = (opcode & 0x000F) >> 4;
+      BYTE x = (opcode & 0x0F00) >> 8;
+      BYTE y = (opcode & 0x00F0) >> 4;
       switch (opcode & 0x000F) {
         case 0: {
           V[x] = V[y];
@@ -157,8 +176,8 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
     case 0x9000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
-      uint8_t y = (opcode & 0x00F0) >> 4;
+      BYTE x = (opcode & 0x0F00) >> 8;
+      BYTE y = (opcode & 0x00F0) >> 4;
       if (V[x] != V[y]) pc += 4;
       else pc += 2;
       break;
@@ -173,24 +192,24 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
     case 0xC000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
-      uint8_t val = opcode & 0x00FF;
+      BYTE x = (opcode & 0x0F00) >> 8;
+      BYTE val = opcode & 0x00FF;
       V[x] = (rand() % 256) & val;
       pc += 2;
       break;
     }
     case 0xD000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
-      uint8_t y = (opcode & 0x00F0) >> 4;
-      uint8_t h = (opcode & 0x000F);
-      uint8_t pixel;
+      BYTE x = (opcode & 0x0F00) >> 8;
+      BYTE y = (opcode & 0x00F0) >> 4;
+      BYTE n = (opcode & 0x000F);
+      BYTE pixel;
       V[0xF] = 0;
-      for (int yline = 0; yline < h; yline++) {
+      for (int yline = 0; yline < n; yline++) {
         pixel = memory[I + yline];
         for(int xline = 0; xline < 8; xline++) {
           if((pixel & (0x80 >> xline)) != 0) {
-            if(gfx[(x + xline + ((y + yline) * 64))] == 1) V[0xF] = 1;
-            gfx[x + xline + ((y + yline) * 64)] ^= 1;
+            if(gfx[x + xline][y + yline] == 1) V[0xF] = 1;
+            gfx[x + xline][y + yline] ^= 1;
           }
         }
       }
@@ -199,7 +218,7 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
     case 0xE000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       switch (opcode & 0x00FF) {
         case 0x9E: {
           //TODO: implement
@@ -214,7 +233,7 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
     case 0xF000: {
-      uint8_t x = (opcode & 0x0F00) >> 8;
+      BYTE x = (opcode & 0x0F00) >> 8;
       switch (opcode & 0x00FF) {
         case 0x07: {
           V[x] = delay_timer;
