@@ -1,29 +1,32 @@
 #ifndef CPU_HPP
 #define CPU_HPP
 
+#include <iostream>
+#include <vector>
 #include <algorithm>
-#include <array>
 #include <cstdlib>
 #include <ctime>
+
+typedef unsigned char BYTE;
 
 using namespace std;
 
 class Chip8_CPU {
-    uint16_t opcode;
-    array<uint8_t, 4096> memory;
-    array<uint8_t, 16> V;
-    uint16_t I;
-    uint16_t pc;
-    uint8_t delay_timer;
-    uint8_t sound_timer;
-    array<uint16_t, 16> stack;
-    uint8_t sp;
+    unsigned short opcode;
+    BYTE memory[4096];
+    BYTE V[16];
+    unsigned short I;
+    unsigned short pc;
+    BYTE delay_timer;
+    BYTE sound_timer;
+    unsigned short stack[16];
+    BYTE sp;
   public:
-    array<uint8_t, 2048> gfx;
+    BYTE gfx[64][32];
     bool drawFlag = false;
-    array<uint8_t, 16> key;
+    BYTE key[16];
     void init(void);
-    void loadProgram(uint8_t* game);
+    void loadProgram(vector<BYTE> game);
     int doCycle(void);
 };
 #endif
