@@ -206,10 +206,10 @@ int Chip8_CPU::doCycle(void) {
       V[0xF] = 0;
       for (int yline = 0; yline < n; yline++) {
         pixel = memory[I + yline];
-        for(int xline = 0; xline < 8; xline++) {
-          if((pixel & (0x80 >> xline)) != 0) {
-            if(gfx[x + xline][y + yline] == 1) V[0xF] = 1;
-            gfx[x + xline][y + yline] ^= 1;
+        for (int xpix = 0; xpix < 8; xpix++) {
+          if ((pixel & (0x80 >> xpix)) != 0) {
+            if (gfx[V[x]][V[y]] == 1) V[0xF] = 1;
+            gfx[V[x]][V[y]] ^= 1;
           }
         }
       }
