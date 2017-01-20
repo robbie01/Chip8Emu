@@ -73,10 +73,10 @@ int Chip8_CPU::doCycle(void) {
         case 0x00EE: {
           sp--;
           pc = stack[sp];
+          pc += 2;
           break;
         }
         default: {
-          pc += 2;
           return 1;
         }
       }
@@ -87,7 +87,7 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
     case 0x2000: {
-      stack[sp] = pc + 2;
+      stack[sp] = pc;
       sp++;
       pc = opcode & 0x0FFF;
       break;
@@ -246,6 +246,7 @@ int Chip8_CPU::doCycle(void) {
               if(key[i] != 0) {
                V[x] = i;
                pressed = true;
+               break;
               }
             }
           }
@@ -286,7 +287,5 @@ int Chip8_CPU::doCycle(void) {
       break;
     }
   }
-  if (delay_timer > 0) --delay_timer;
-  if (sound_timer > 0) --sound_timer;
   return 0;
 }
