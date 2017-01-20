@@ -17,14 +17,14 @@ class Chip8_CPU {
     BYTE V[16];
     unsigned short I;
     unsigned short pc;
-    BYTE delay_timer;
-    BYTE sound_timer;
     unsigned short stack[16];
     BYTE sp;
   public:
     BYTE gfx[64][32];
     bool drawFlag = false;
     BYTE key[16];
+    BYTE delay_timer;
+    BYTE sound_timer;
     void init(void);
     void loadProgram(vector<BYTE> game);
     int doCycle(void);

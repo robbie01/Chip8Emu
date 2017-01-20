@@ -1,10 +1,11 @@
 #include <ios>
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <iterator>
 #include <vector>
 #include <fstream>
-#include <SDL.h>
+#include "SDL.h"
 #include "cpu.hpp"
 
 typedef unsigned char BYTE;
@@ -14,6 +15,8 @@ using namespace std;
 const int PIXEL_SIZE =  8;
 const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
 const int SCREEN_HEIGHT =  32 * PIXEL_SIZE;
+
+const int FREQUENCY = 400;
 
 void logSDLError(void) {
   cerr << "SDL error: " << SDL_GetError() << endl;
@@ -47,12 +50,25 @@ void drawGfx(SDL_Surface *sfc, const BYTE gfx[64][32]) {
   }
 }
 
+int DecreaseTimers(void* data) {
+  BYTE* timers[2];
+  memcpy(timers, (BYTE**)data, sizeof timers);
+  for (;;) {
+    for (int i = 0; i < 2; i++) {
+      if (*timers[i] > 0) {
+        (*timers[i])--;
+      }
+      SDL_Delay(1000/60);
+    }
+  }
+}
+
 int main(int argc, char* argv[]) {
   #ifndef NDEBUG
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   #endif
   if (argc != 2) {
-    cerr << "Error: Too many or not enough arguments" << endl;
+    cerr << "Usage: Chip8Emu <rom>" << endl;
     return 1;
   }
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -75,6 +91,8 @@ int main(int argc, char* argv[]) {
   vector<BYTE> pong = fileToBytes(argv[1]);
   Chip8_CPU cpu;
   cpu.init();
+  BYTE* timers[] = {&cpu.delay_timer, &cpu.sound_timer};
+  SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", timers);
   cpu.loadProgram(pong);
   SDL_Event e;
   bool quit = false;
@@ -235,7 +253,10 @@ int main(int argc, char* argv[]) {
       SDL_UpdateWindowSurface(win);
       cpu.drawFlag = false;
     }
-    //SDL_Delay(1000/60);
+    if (cpu.sound_timer > 0) {
+      //TODO: buzzer
+    }
+    SDL_Delay(1000/FREQUENCY);
   }
   SDL_DestroyWindow(win);
   SDL_Quit();
