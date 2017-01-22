@@ -1,4 +1,5 @@
 #include <ios>
+#include <map>
 #include <string>
 #include <cstring>
 #include <iostream>
@@ -12,11 +13,33 @@ typedef unsigned char BYTE;
 
 using namespace std;
 
+const map<SDL_Keycode, BYTE> KEYS = { {SDLK_1, 1},
+                                 {SDLK_2, 2},
+                                 {SDLK_3, 3},
+                                 {SDLK_4, 0xC},
+                                 {SDLK_q, 4},
+                                 {SDLK_w, 5},
+                                 {SDLK_e, 6},
+                                 {SDLK_r, 0xD},
+                                 {SDLK_a, 7},
+                                 {SDLK_s, 8},
+                                 {SDLK_d, 9},
+                                 {SDLK_f, 0xE},
+                                 {SDLK_z, 0xA},
+                                 {SDLK_x, 0},
+                                 {SDLK_c, 0xB},
+                                 {SDLK_v, 0xF} };
+
 const int PIXEL_SIZE =  8;
 const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
 const int SCREEN_HEIGHT =  32 * PIXEL_SIZE;
 
 const int FREQUENCY = 400;
+
+bool quit = false;
+
+SDL_Window *win;
+SDL_Surface *sfc;
 
 void logSDLError(void) {
   cerr << "SDL error: " << SDL_GetError() << endl;
@@ -33,10 +56,11 @@ vector<BYTE> fileToBytes(char const* filename) {
   ret.insert(ret.begin(),
              istream_iterator<BYTE>(fl),
              istream_iterator<BYTE>());
+  fl.close();
   return ret;
 }
 
-void drawGfx(SDL_Surface *sfc, const BYTE gfx[64][32]) {
+void drawGfx(const BYTE gfx[64][32]) {
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 32; y++) {
       SDL_Rect square = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
@@ -48,12 +72,13 @@ void drawGfx(SDL_Surface *sfc, const BYTE gfx[64][32]) {
       }
     }
   }
+  SDL_UpdateWindowSurface(win);
 }
 
 int DecreaseTimers(void* data) {
   BYTE* timers[2];
   memcpy(timers, (BYTE**)data, sizeof timers);
-  for (;;) {
+  while (!quit) {
     for (int i = 0; i < 2; i++) {
       if (*timers[i] > 0) {
         (*timers[i])--;
@@ -61,6 +86,7 @@ int DecreaseTimers(void* data) {
       SDL_Delay(1000/60);
     }
   }
+  return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -75,13 +101,13 @@ int main(int argc, char* argv[]) {
     logSDLError();
     return 1;
   }
-  SDL_Window *win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/* | INPUT_GRABBED*/);
+  win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/* | INPUT_GRABBED*/);
   if (win == nullptr) {
     logSDLError();
     SDL_Quit();
     return 1;
   }
-  SDL_Surface *sfc = SDL_GetWindowSurface(win);
+  sfc = SDL_GetWindowSurface(win);
   if (sfc == nullptr) {
     SDL_DestroyWindow(win);
     logSDLError();
@@ -90,12 +116,12 @@ int main(int argc, char* argv[]) {
   }
   vector<BYTE> pong = fileToBytes(argv[1]);
   Chip8_CPU cpu;
+  cpu.GfxDraw = drawGfx;
   cpu.init();
   BYTE* timers[] = {&cpu.delay_timer, &cpu.sound_timer};
   SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", timers);
   cpu.loadProgram(pong);
   SDL_Event e;
-  bool quit = false;
   while (!quit) {
     while (SDL_PollEvent(&e)) {
       switch (e.type) {
@@ -104,141 +130,15 @@ int main(int argc, char* argv[]) {
           break;
         }
         case SDL_KEYDOWN: {
-          switch (e.key.keysym.sym) {
-            case SDLK_1: {
-              cpu.key[1] = 1;
-              break;
-            }
-            case SDLK_2: {
-              cpu.key[2] = 1;
-              break;
-            }
-            case SDLK_3: {
-              cpu.key[3] = 1;
-              break;
-            }
-            case SDLK_4: {
-              cpu.key[0xC] = 1;
-              break;
-            }
-            case SDLK_q: {
-              cpu.key[4] = 1;
-              break;
-            }
-            case SDLK_w: {
-              cpu.key[5] = 1;
-              break;
-            }
-            case SDLK_e: {
-              cpu.key[6] = 1;
-              break;
-            }
-            case SDLK_r: {
-              cpu.key[0xD] = 1;
-              break;
-            }
-            case SDLK_a: {
-              cpu.key[7] = 1;
-              break;
-            }
-            case SDLK_s: {
-              cpu.key[8] = 1;
-              break;
-            }
-            case SDLK_d: {
-              cpu.key[9] = 1;
-              break;
-            }
-            case SDLK_f: {
-              cpu.key[0xE] = 1;
-              break;
-            }
-            case SDLK_z: {
-              cpu.key[0xA] = 1;
-              break;
-            }
-            case SDLK_x: {
-              cpu.key[0] = 1;
-              break;
-            }
-            case SDLK_c: {
-              cpu.key[0xB] = 1;
-              break;
-            }
-            case SDLK_v: {
-              cpu.key[0xF] = 1;
-              break;
-            }
-          }
+          auto key = KEYS.find(e.key.keysym.sym);
+          if (key != KEYS.end())
+            cpu.OnKey(key->first);
           break;
         }
         case SDL_KEYUP: {
-          switch (e.key.keysym.sym) {
-            case SDLK_1: {
-              cpu.key[1] = 0;
-              break;
-            }
-            case SDLK_2: {
-              cpu.key[2] = 0;
-              break;
-            }
-            case SDLK_3: {
-              cpu.key[3] = 0;
-              break;
-            }
-            case SDLK_4: {
-              cpu.key[0xC] = 0;
-              break;
-            }
-            case SDLK_q: {
-              cpu.key[4] = 0;
-              break;
-            }
-            case SDLK_w: {
-              cpu.key[5] = 0;
-              break;
-            }
-            case SDLK_e: {
-              cpu.key[6] = 0;
-              break;
-            }
-            case SDLK_r: {
-              cpu.key[0xD] = 0;
-              break;
-            }
-            case SDLK_a: {
-              cpu.key[7] = 0;
-              break;
-            }
-            case SDLK_s: {
-              cpu.key[8] = 0;
-              break;
-            }
-            case SDLK_d: {
-              cpu.key[9] = 0;
-              break;
-            }
-            case SDLK_f: {
-              cpu.key[0xE] = 0;
-              break;
-            }
-            case SDLK_z: {
-              cpu.key[0xA] = 0;
-              break;
-            }
-            case SDLK_x: {
-              cpu.key[0] = 0;
-              break;
-            }
-            case SDLK_c: {
-              cpu.key[0xB] = 0;
-              break;
-            }
-            case SDLK_v: {
-              cpu.key[0xF] = 0;
-              break;
-            }
-          }
+          auto key = KEYS.find(e.key.keysym.sym);
+          if (key != KEYS.end())
+            cpu.OffKey(key->first);
           break;
         }
       }
@@ -247,11 +147,6 @@ int main(int argc, char* argv[]) {
     if (ok == 1) {
       cerr << "Error: unknown instruction" << endl;
       return 1;
-    }
-    if (cpu.drawFlag) {
-      drawGfx(sfc, cpu.gfx);
-      SDL_UpdateWindowSurface(win);
-      cpu.drawFlag = false;
     }
     if (cpu.sound_timer > 0) {
       //TODO: buzzer
