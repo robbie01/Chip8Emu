@@ -19,6 +19,14 @@ const BYTE Chip8_FontSet[80] = {
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
+void Chip8_CPU::OnKey(BYTE index) {
+  key[index] = 1;
+}
+
+void Chip8_CPU::OffKey(BYTE index) {
+  key[index] = 0;
+}
+
 void Chip8_CPU::init(void) {
   srand(time(NULL));
 
@@ -47,7 +55,7 @@ void Chip8_CPU::init(void) {
   delay_timer = 0;
   sound_timer = 0;
 
-  drawFlag = true;
+  GfxDraw(gfx);
 }
 
 void Chip8_CPU::loadProgram(vector<BYTE> game) {
@@ -66,7 +74,7 @@ int Chip8_CPU::doCycle(void) {
               gfx[i][j] = 0;
             }
           }
-          drawFlag = true;
+          GfxDraw(gfx);
           pc += 2;
           break;
         }
@@ -213,7 +221,7 @@ int Chip8_CPU::doCycle(void) {
           }
         }
       }
-      drawFlag = true;
+      GfxDraw(gfx);
       pc += 2;
       break;
     }
