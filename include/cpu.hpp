@@ -1,5 +1,5 @@
-#ifndef CPU_HPP
-#define CPU_HPP
+#ifndef _CPU_HPP
+#define _CPU_HPP
 
 #include <iostream>
 #include <vector>
@@ -8,8 +8,6 @@
 #include <ctime>
 
 typedef unsigned char BYTE;
-
-using namespace std;
 
 class Chip8_CPU {
     unsigned short opcode;
@@ -25,7 +23,7 @@ class Chip8_CPU {
     BYTE delay_timer;
     BYTE sound_timer;
     void init(void);
-    void loadProgram(vector<BYTE> game);
+    void loadProgram(std::vector<BYTE> game);
     void (*GfxDraw)(const BYTE[64][32]);
     void OnKey(BYTE index);
     void OffKey(BYTE index);

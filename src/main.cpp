@@ -2,33 +2,29 @@
 #include <map>
 #include <string>
 #include <cstring>
-#include <iostream>
 #include <iterator>
-#include <vector>
 #include <fstream>
 #include "SDL.h"
 #include "cpu.hpp"
 
-typedef unsigned char BYTE;
-
-using namespace std;
-
-const map<SDL_Keycode, BYTE> KEYS = { {SDLK_1, 1},
-                                 {SDLK_2, 2},
-                                 {SDLK_3, 3},
-                                 {SDLK_4, 0xC},
-                                 {SDLK_q, 4},
-                                 {SDLK_w, 5},
-                                 {SDLK_e, 6},
-                                 {SDLK_r, 0xD},
-                                 {SDLK_a, 7},
-                                 {SDLK_s, 8},
-                                 {SDLK_d, 9},
-                                 {SDLK_f, 0xE},
-                                 {SDLK_z, 0xA},
-                                 {SDLK_x, 0},
-                                 {SDLK_c, 0xB},
-                                 {SDLK_v, 0xF} };
+const std::map<SDL_Keycode, BYTE> KEYS = {
+  {SDLK_1, 1},
+  {SDLK_2, 2},
+  {SDLK_3, 3},
+  {SDLK_4, 0xC},
+  {SDLK_q, 4},
+  {SDLK_w, 5},
+  {SDLK_e, 6},
+  {SDLK_r, 0xD},
+  {SDLK_a, 7},
+  {SDLK_s, 8},
+  {SDLK_d, 9},
+  {SDLK_f, 0xE},
+  {SDLK_z, 0xA},
+  {SDLK_x, 0},
+  {SDLK_c, 0xB},
+  {SDLK_v, 0xF}
+};
 
 const int PIXEL_SIZE =  8;
 const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
@@ -42,20 +38,20 @@ SDL_Window *win;
 SDL_Surface *sfc;
 
 void logSDLError(void) {
-  cerr << "SDL error: " << SDL_GetError() << endl;
+  std::cerr << "SDL error: " << SDL_GetError() << std::endl;
 }
 
-vector<BYTE> fileToBytes(char const* filename) {
-  ifstream fl(filename, ios_base::in | ios_base::binary);
-  fl.unsetf(ios::skipws);
-  fl.seekg(0, ios::end);
-  ios::streampos pos = fl.tellg();
-  fl.seekg(0, ios::beg);
-  vector<BYTE> ret;
+std::vector<BYTE> fileToBytes(char const* filename) {
+  std::ifstream fl(filename, std::ios_base::in | std::ios_base::binary);
+  fl.unsetf(std::ios::skipws);
+  fl.seekg(0, std::ios::end);
+  std::ios::streampos pos = fl.tellg();
+  fl.seekg(0, std::ios::beg);
+  std::vector<BYTE> ret;
   ret.reserve(pos);
   ret.insert(ret.begin(),
-             istream_iterator<BYTE>(fl),
-             istream_iterator<BYTE>());
+             std::istream_iterator<BYTE>(fl),
+             std::istream_iterator<BYTE>());
   fl.close();
   return ret;
 }
@@ -77,7 +73,7 @@ void drawGfx(const BYTE gfx[64][32]) {
 
 int DecreaseTimers(void* data) {
   BYTE* timers[2];
-  memcpy(timers, (BYTE**)data, sizeof timers);
+  std::memcpy(timers, (BYTE**)data, sizeof timers);
   while (!quit) {
     for (int i = 0; i < 2; i++) {
       if (*timers[i] > 0) {
@@ -94,7 +90,7 @@ int main(int argc, char* argv[]) {
   SDL_LogSetAllPriority(SDL_LOG_PRIORITY_WARN);
   #endif
   if (argc != 2) {
-    cerr << "Usage: Chip8Emu <rom>" << endl;
+    std::cerr << "Usage: " << argv[0] << " <rom>" << std::endl;
     return 1;
   }
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -114,7 +110,7 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
     return 1;
   }
-  vector<BYTE> pong = fileToBytes(argv[1]);
+  std::vector<BYTE> pong = fileToBytes(argv[1]);
   Chip8_CPU cpu;
   cpu.GfxDraw = drawGfx;
   cpu.init();
@@ -145,7 +141,7 @@ int main(int argc, char* argv[]) {
     }
     int ok = cpu.doCycle();
     if (ok == 1) {
-      cerr << "Error: unknown instruction" << endl;
+      std::cerr << "Error: unknown instruction" << std::endl;
       return 1;
     }
     if (cpu.sound_timer > 0) {

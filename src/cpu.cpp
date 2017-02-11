@@ -28,7 +28,7 @@ void Chip8_CPU::OffKey(BYTE index) {
 }
 
 void Chip8_CPU::init(void) {
-  srand(time(NULL));
+  std::srand(std::time(NULL));
 
   pc = 0x200;
   opcode = 0;
@@ -58,7 +58,7 @@ void Chip8_CPU::init(void) {
   GfxDraw(gfx);
 }
 
-void Chip8_CPU::loadProgram(vector<BYTE> game) {
+void Chip8_CPU::loadProgram(std::vector<BYTE> game) {
   for (unsigned long i = 0; i < game.size(); i++)
     memory[i + 512] = game[i];
 }
