@@ -22,11 +22,11 @@ elseif (MSVC)
 endif()
 
 # Look up SDL2 and add the include directory to our include path
+file(GLOB Chip8Emu_SRC "${Chip8Emu_SOURCE_DIR}/src/*.cpp")
 find_package(SDL2 REQUIRED)
 add_executable(Chip8Emu ${Chip8Emu_SRC})
 set_property(TARGET Chip8Emu PROPERTY CXX_STANDARD 11)
 target_include_directories(Chip8Emu PRIVATE ${SDL2_INCLUDE_DIR} include)
-file(GLOB Chip8Emu_SRC "${Chip8Emu_SOURCE_DIR}/src/*.cpp")
 target_link_libraries(Chip8Emu ${SDL2_LIBRARY})
 
 install(TARGETS Chip8Emu RUNTIME DESTINATION ${BIN_DIR})
