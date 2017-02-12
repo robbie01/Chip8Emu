@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <string>
+#include <cstring>
 
 typedef unsigned char BYTE;
 

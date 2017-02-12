@@ -1,7 +1,5 @@
 #include <ios>
 #include <map>
-#include <string>
-#include <cstring>
 #include <iterator>
 #include <fstream>
 #include "SDL.h"
