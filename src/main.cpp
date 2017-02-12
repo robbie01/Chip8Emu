@@ -30,11 +30,11 @@ const std::map<SDL_Keycode, BYTE> KEYS = {
   {SDLK_v, 0xF}
 };
 
-const int PIXEL_SIZE =  8;
-const int SCREEN_WIDTH = 64 * PIXEL_SIZE;
-const int SCREEN_HEIGHT =  32 * PIXEL_SIZE;
+constexpr int PIXEL_SIZE =  8;
+constexpr int SCREEN_WIDTH = 64 * PIXEL_SIZE;
+constexpr int SCREEN_HEIGHT =  32 * PIXEL_SIZE;
 
-const int FREQUENCY = 400;
+constexpr int FREQUENCY = 400;
 
 bool quit = false;
 
