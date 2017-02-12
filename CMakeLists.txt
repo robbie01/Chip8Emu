@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 include_directories(include)
-project(Chip8Emu C CXX)
+project(Chip8Emu)
 
 # Use our modified FindSDL2* modules
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${Chip8Emu_SOURCE_DIR}/cmake")
