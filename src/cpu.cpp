@@ -2,6 +2,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstdlib>
+#include <random>
 #include <ctime>
 #include <string>
 #include <cstring>
@@ -26,6 +27,8 @@ constexpr BYTE Chip8_FontSet[80] = {
 	0xF0, 0x80, 0xF0, 0x80, 0x80	// F
 };
 
+std::mt19937 mt_rand(time(NULL));
+
 void Chip8_CPU::OnKey(BYTE index) {
 	key[index] = 1;
 }
@@ -35,8 +38,6 @@ void Chip8_CPU::OffKey(BYTE index) {
 }
 
 void Chip8_CPU::init() {
-	std::srand(std::time(NULL));
-
 	pc = 0x200;
 	opcode = 0;
 	I = 0;
@@ -200,7 +201,7 @@ int Chip8_CPU::doCycle() {
 		case 0xC000: {
 			BYTE x = (opcode & 0x0F00) >> 8;
 			BYTE val = opcode & 0x00FF;
-			V[x] = (rand() % 256) & val;
+			V[x] = (mt_rand() % 256) & val;
 			pc += 2;
 			break;
 		}
