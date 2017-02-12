@@ -46,8 +46,8 @@ void logSDLError(void) {
   std::cerr << "SDL error: " << SDL_GetError() << std::endl;
 }
 
-std::vector<BYTE> fileToBytes(char const* filename) {
-  std::ifstream fl(filename, std::ios_base::in | std::ios_base::binary);
+std::vector<BYTE> fileToBytes(const std::string filename) {
+  std::ifstream fl(filename.c_str(), std::ios_base::in | std::ios_base::binary);
   fl.unsetf(std::ios::skipws);
   fl.seekg(0, std::ios::end);
   std::ios::streampos pos = fl.tellg();
@@ -120,13 +120,13 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
     return 1;
   }
-  std::vector<BYTE> pong = fileToBytes(argv[1]);
+  std::vector<BYTE> rom = fileToBytes(argv[1]);
   Chip8_CPU cpu;
   cpu.GfxDraw = drawGfx;
   cpu.init();
   BYTE* timers[] = {&cpu.delay_timer, &cpu.sound_timer};
   SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", timers);
-  cpu.loadProgram(pong);
+  cpu.loadProgram(rom);
   SDL_Event e;
   while (!quit) {
     while (SDL_PollEvent(&e)) {
