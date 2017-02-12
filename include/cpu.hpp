@@ -1,5 +1,4 @@
-#ifndef _CPU_HPP
-#define _CPU_HPP
+#pragma once
 
 typedef unsigned char BYTE;
 
@@ -23,4 +22,3 @@ class Chip8_CPU {
     void OffKey(BYTE index);
     int doCycle(void);
 };
-#endif
