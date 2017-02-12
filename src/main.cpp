@@ -155,6 +155,7 @@ int main(int argc, char* argv[]) {
     }
     SDL_Delay(1000/FREQUENCY);
   }
+  SDL_DestroyRenderer(ren);
   SDL_DestroyWindow(win);
   SDL_Quit();
   return 0;
