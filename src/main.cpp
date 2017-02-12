@@ -134,13 +134,13 @@ int main(int argc, char* argv[]) {
         case SDL_KEYDOWN: {
           auto key = KEYS.find(e.key.keysym.sym);
           if (key != KEYS.end())
-            cpu.OnKey(key->first);
+            cpu.OnKey(key->second);
           break;
         }
         case SDL_KEYUP: {
           auto key = KEYS.find(e.key.keysym.sym);
           if (key != KEYS.end())
-            cpu.OffKey(key->first);
+            cpu.OffKey(key->second);
           break;
         }
       }

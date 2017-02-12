@@ -41,8 +41,9 @@ void Chip8_CPU::init(void) {
     }
   }
   for (int i = 0; i < 16; i++) {
+    key[i] = 0;
     stack[i] = 0;
-    V[i] = 0; //save 2 lines, save the world
+    V[i] = 0; //save 3 lines, save the world
   }
   for (int i = 0; i < 4096; i++) {
     memory[i] = 0;
@@ -249,15 +250,14 @@ int Chip8_CPU::doCycle(void) {
         }
         case 0x0A: {
           bool pressed = false;
-          while (!pressed) {
-            for (int i = 0; i < 16; i++) {
-              if(key[i] != 0) {
-               V[x] = i;
-               pressed = true;
-               break;
-              }
+          for (int i = 0; i < 16; i++) {
+            if (key[i] != 0) {
+              V[x] = i;
+              pressed = true;
+              break;
             }
           }
+          if (!pressed) pc -= 2;
           break;
         }
         case 0x15: {
