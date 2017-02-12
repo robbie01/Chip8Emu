@@ -34,8 +34,9 @@ const int FREQUENCY = 400;
 
 bool quit = false;
 
-SDL_Window *win;
-SDL_Surface *sfc;
+//SDL_Window *win;
+//SDL_Surface *sfc;
+SDL_Renderer *ren;
 
 void logSDLError(void) {
   std::cerr << "SDL error: " << SDL_GetError() << std::endl;
@@ -59,16 +60,20 @@ std::vector<BYTE> fileToBytes(char const* filename) {
 void drawGfx(const BYTE gfx[64][32]) {
   for (int x = 0; x < 64; x++) {
     for (int y = 0; y < 32; y++) {
-      SDL_Rect square = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
+      SDL_Rect pix = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
       if(gfx[x][y] == 1) {
-        SDL_FillRect(sfc, &square, SDL_MapRGB(sfc->format, 0xFF, 0xFF, 0xFF));
+        //SDL_FillRect(sfc, &pix, SDL_MapRGB(sfc->format, 0xFF, 0xFF, 0xFF));
+        SDL_SetRenderDrawColor(ren, 0xFF, 0xFF, 0xFF, 0xFF);
       }
       else {
-        SDL_FillRect(sfc, &square, SDL_MapRGB(sfc->format, 0x00, 0x00, 0x00));
+        //SDL_FillRect(sfc, &pix, SDL_MapRGB(sfc->format, 0x00, 0x00, 0x00));
+        SDL_SetRenderDrawColor(ren, 0x00, 0x00, 0x00, 0xFF);
       }
+      SDL_RenderFillRect(ren, &pix);
     }
   }
-  SDL_UpdateWindowSurface(win);
+  //SDL_UpdateWindowSurface(win);
+  SDL_RenderPresent(ren);
 }
 
 int DecreaseTimers(void* data) {
@@ -97,14 +102,15 @@ int main(int argc, char* argv[]) {
     logSDLError();
     return 1;
   }
-  win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/* | INPUT_GRABBED*/);
+  SDL_Window *win = SDL_CreateWindow("CHIP-8 Emulator", 100, 100, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN/* | INPUT_GRABBED*/);
   if (win == nullptr) {
     logSDLError();
     SDL_Quit();
     return 1;
   }
-  sfc = SDL_GetWindowSurface(win);
-  if (sfc == nullptr) {
+  //sfc = SDL_GetWindowSurface(win);
+  ren = SDL_CreateRenderer(win, -1, 0);
+  if ( /* sfc */ ren == nullptr) {
     SDL_DestroyWindow(win);
     logSDLError();
     SDL_Quit();
