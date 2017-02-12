@@ -35,23 +35,13 @@ void Chip8_CPU::init(void) {
   I = 0;
   sp = 0;
 
-  for (int i = 0; i < 64; i++) {
-    for (int j = 0; j < 32; j++) {
-      gfx[i][j] = 0;
-    }
-  }
-  for (int i = 0; i < 16; i++) {
-    key[i] = 0;
-    stack[i] = 0;
-    V[i] = 0; //save 3 lines, save the world
-  }
-  for (int i = 0; i < 4096; i++) {
-    memory[i] = 0;
-  }
+  std::memset(gfx, 0, sizeof(gfx[0][0]) * 64 * 32);
+  std::memset(key, 0, 16);
+  std::memset(V, 0, 16);
+  std::memset(stack, 0, sizeof(stack)/sizeof(stack[0]));
+  std::memset(memory, 0, 4096);
 
-  for (int i = 0; i < 80; i++) {
-    memory[i] = Chip8_FontSet[i];
-  }
+  std::memcpy(memory, Chip8_FontSet, 80);
 
   delay_timer = 0;
   sound_timer = 0;
