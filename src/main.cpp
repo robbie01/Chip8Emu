@@ -55,8 +55,8 @@ std::vector<BYTE> fileToBytes(const std::string filename) {
 	std::vector<BYTE> ret;
 	ret.reserve(pos);
 	ret.insert(ret.begin(),
-						 std::istream_iterator<BYTE>(fl),
-						 std::istream_iterator<BYTE>());
+		std::istream_iterator<BYTE>(fl),
+		std::istream_iterator<BYTE>());
 	fl.close();
 	return ret;
 }
