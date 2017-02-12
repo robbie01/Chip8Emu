@@ -1,7 +1,11 @@
 #include <ios>
 #include <map>
+#include <vector>
 #include <iterator>
+#include <iostream>
 #include <fstream>
+#include <cstring>
+#include <string>
 #include "SDL.h"
 #include "cpu.hpp"
 

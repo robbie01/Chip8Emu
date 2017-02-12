@@ -1,3 +1,10 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <ctime>
+#include <string>
+#include <cstring>
 #include "cpu.hpp"
 
 const BYTE Chip8_FontSet[80] = {

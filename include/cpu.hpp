@@ -1,14 +1,6 @@
 #ifndef _CPU_HPP
 #define _CPU_HPP
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <cstdlib>
-#include <ctime>
-#include <string>
-#include <cstring>
-
 typedef unsigned char BYTE;
 
 class Chip8_CPU {
