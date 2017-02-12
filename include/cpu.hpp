@@ -1,7 +1,7 @@
 #pragma once
 
-using BYTE = std::uint8_t
-using SHORT= std::uint16_t
+using BYTE = std::uint8_t;
+using SHORT= std::uint16_t;
 
 class Chip8_CPU {
     SHORT opcode;
