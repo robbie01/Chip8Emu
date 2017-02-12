@@ -6,7 +6,7 @@
 #include <fstream>
 #include <cstring>
 #include <string>
-#include "SDL.h"
+extern "C" { #include "SDL.h" }
 #include "cpu.hpp"
 
 const std::map<SDL_Keycode, BYTE> KEYS = {
