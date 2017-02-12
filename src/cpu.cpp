@@ -34,7 +34,7 @@ void Chip8_CPU::OffKey(BYTE index) {
   key[index] = 0;
 }
 
-void Chip8_CPU::init(void) {
+void Chip8_CPU::init() {
   std::srand(std::time(NULL));
 
   pc = 0x200;
@@ -61,7 +61,7 @@ void Chip8_CPU::loadProgram(std::vector<BYTE> game) {
     memory[i + 512] = game[i];
 }
 
-int Chip8_CPU::doCycle(void) {
+int Chip8_CPU::doCycle() {
   opcode = memory[pc] << 8 | memory[pc + 1];
   switch (opcode & 0xF000) {
     case 0x0000: {

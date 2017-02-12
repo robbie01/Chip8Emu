@@ -42,7 +42,7 @@ bool quit = false;
 //SDL_Surface *sfc;
 SDL_Renderer *ren;
 
-void logSDLError(void) {
+void logSDLError() {
   std::cerr << "SDL error: " << SDL_GetError() << std::endl;
 }
 
