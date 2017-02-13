@@ -44,13 +44,13 @@ void Chip8_CPU::init() {
 	I = 0;
 	sp = 0;
 
-	std::memset(gfx.data(), 0, sizeof(gfx));
-	std::memset(key.data(), 0, sizeof(key));
-	std::memset(V.data(), 0, sizeof(V));
-	std::memset(stack.data(), 0, sizeof(stack));
-	std::memset(memory.data(), 0, sizeof(memory));
+	std::fill(&gfx[0][0], &gfx[0][0] + sizeof(gfx), 0); //2d array stuff
+	std::fill(key.begin(), key.end(), 0);
+	std::fill(V.begin(), V.end(), 0);
+	std::fill(stack.begin(), stack.end(), 0);
+	std::fill(memory.begin(), memory.end(), 0);
 
-	std::memcpy(memory.data(), Chip8_FontSet.data(), sizeof(Chip8_FontSet));
+	std::copy(Chip8_FontSet.begin(), Chip8_FontSet.end(), memory.begin());
 
 	delay_timer = 0;
 	sound_timer = 0;
@@ -69,7 +69,7 @@ int Chip8_CPU::doCycle() {
 		case 0x0000: {
 			switch (opcode) {
 				case 0x00E0: {
-					std::memset(gfx.data(), 0, sizeof(gfx.data()));
+					std::fill(&gfx[0][0], &gfx[0][0] + sizeof(gfx), 0);
 					GfxDraw(gfx);
 					pc += 2;
 					break;

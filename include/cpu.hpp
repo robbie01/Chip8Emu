@@ -2,7 +2,7 @@
 #include <array>
 
 using BYTE = std::uint8_t;
-using SHORT= std::uint16_t;
+using SHORT = std::uint16_t;
 
 template <typename T, std::size_t X, std::size_t Y>
 using array2d = std::array<std::array<T, Y>, X>;
