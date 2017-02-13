@@ -1,24 +1,28 @@
 #pragma once
+#include <array>
 
 using BYTE = std::uint8_t;
 using SHORT= std::uint16_t;
 
+template <typename T, std::size_t X, std::size_t Y>
+using array2d = std::array<std::array<T, Y>, X>;
+
 class Chip8_CPU {
 		SHORT opcode;
-		BYTE memory[4096];
-		BYTE V[16];
+		std::array<BYTE, 4096> memory;
+		std::array<BYTE, 16> V;
 		SHORT I;
 		SHORT pc;
-		SHORT stack[16];
+		std::array<SHORT, 16> stack;
 		BYTE sp;
-		BYTE gfx[64][32];
-		BYTE key[16];
+		array2d<BYTE, 64, 32> gfx;
+		std::array<BYTE, 16> key;
 	public:
 		BYTE delay_timer;
 		BYTE sound_timer;
 		void init();
 		void loadProgram(std::vector<BYTE> game);
-		void (*GfxDraw)(const BYTE[64][32]);
+		void (*GfxDraw)(const array2d<BYTE, 64, 32>);
 		void OnKey(BYTE index);
 		void OffKey(BYTE index);
 		int doCycle();

@@ -1,3 +1,4 @@
+#include <array>
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -8,7 +9,7 @@
 #include <cstring>
 #include "cpu.hpp"
 
-constexpr BYTE Chip8_FontSet[80] = {
+constexpr std::array<BYTE, 80> Chip8_FontSet = {
 	0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
 	0x20, 0x60, 0x20, 0x20, 0x70, // 1
 	0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -43,13 +44,13 @@ void Chip8_CPU::init() {
 	I = 0;
 	sp = 0;
 
-	std::memset(gfx, 0, sizeof(gfx[0][0]) * 64 * 32);
-	std::memset(key, 0, 16);
-	std::memset(V, 0, 16);
-	std::memset(stack, 0, sizeof(stack)/sizeof(stack[0]));
-	std::memset(memory, 0, 4096);
+	std::memset(gfx.data(), 0, sizeof(gfx));
+	std::memset(key.data(), 0, sizeof(key));
+	std::memset(V.data(), 0, sizeof(V));
+	std::memset(stack.data(), 0, sizeof(stack));
+	std::memset(memory.data(), 0, sizeof(memory));
 
-	std::memcpy(memory, Chip8_FontSet, 80);
+	std::memcpy(memory.data(), Chip8_FontSet.data(), sizeof(Chip8_FontSet));
 
 	delay_timer = 0;
 	sound_timer = 0;
@@ -68,11 +69,7 @@ int Chip8_CPU::doCycle() {
 		case 0x0000: {
 			switch (opcode) {
 				case 0x00E0: {
-					for (int i = 0; i < 64; i++) {
-						for (int j = 0; j < 32; j++) {
-							gfx[i][j] = 0;
-						}
-					}
+					std::memset(gfx.data(), 0, sizeof(gfx.data()));
 					GfxDraw(gfx);
 					pc += 2;
 					break;

@@ -61,7 +61,7 @@ std::vector<BYTE> fileToBytes(const std::string filename) {
 	return ret;
 }
 
-void drawGfx(const BYTE gfx[64][32]) {
+void drawGfx(const array2d<BYTE, 64, 32> gfx) {
 	for (int x = 0; x < 64; x++) {
 		for (int y = 0; y < 32; y++) {
 			SDL_Rect pix = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
