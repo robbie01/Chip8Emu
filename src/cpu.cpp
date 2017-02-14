@@ -212,7 +212,7 @@ int Chip8_CPU::doCycle() {
 				pixel = memory[I + yline];
 				for (int xpix = 0; xpix < 8; xpix++) {
 					if ((pixel & (0x80 >> xpix)) != 0) {
-						if (gfx[V[x]+xpix][V[y]+yline] == 1) V[0xF] = 1;
+						if (gfx[V[x]+xpix][V[y]+yline] == 1) V[0xF] |= 1;
 						gfx[V[x]+xpix][V[y]+yline] ^= 1;
 					}
 				}
