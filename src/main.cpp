@@ -4,7 +4,6 @@
 #include <iterator>
 #include <iostream>
 #include <fstream>
-#include <cstring>
 #include <string>
 extern "C" {
 	#include "SDL.h"
