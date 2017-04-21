@@ -81,8 +81,7 @@ void drawGfx(const array2d<BYTE, 64, 32> gfx) {
 }
 
 int DecreaseTimers(void* data) {
-	BYTE* timers[2];
-	std::memcpy(timers, (BYTE**)data, sizeof timers);
+	BYTE** timers = reinterpret_cast<BYTE**>(data);
 	while (!quit) {
 		for (int i = 0; i < 2; i++) {
 			if (*timers[i] > 0) {
@@ -125,7 +124,7 @@ int main(int argc, char* argv[]) {
 	cpu.GfxDraw = drawGfx;
 	cpu.init();
 	BYTE* timers[] = {&cpu.delay_timer, &cpu.sound_timer};
-	SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", timers);
+	SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", reinterpret_cast<void*>(timers));
 	cpu.loadProgram(rom);
 	SDL_Event e;
 	while (!quit) {
