@@ -6,7 +6,6 @@
 #include <random>
 #include <ctime>
 #include <string>
-#include <cstring>
 #include "cpu.hpp"
 
 constexpr std::array<BYTE, 80> Chip8_FontSet = {
