@@ -7,6 +7,11 @@ using SHORT = std::uint16_t;
 template <typename T, std::size_t X, std::size_t Y>
 using array2d = std::array<std::array<T, Y>, X>;
 
+typedef struct {
+  BYTE delayTimer;
+  BYTE soundTimer;
+} timers_t;
+
 class Chip8_CPU {
 		SHORT opcode;
 		std::array<BYTE, 4096> memory;
@@ -18,8 +23,7 @@ class Chip8_CPU {
 		array2d<BYTE, 64, 32> gfx;
 		std::array<BYTE, 16> key;
 	public:
-		BYTE delay_timer;
-		BYTE sound_timer;
+		timers_t timers;
 		void init();
 		void loadProgram(std::vector<BYTE> game);
 		void (*GfxDraw)(const array2d<BYTE, 64, 32>);

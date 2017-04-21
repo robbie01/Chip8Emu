@@ -52,8 +52,8 @@ void Chip8_CPU::init() {
 
 	std::copy(Chip8_FontSet.begin(), Chip8_FontSet.end(), memory.begin());
 
-	delay_timer = 0;
-	sound_timer = 0;
+	timers.delayTimer = 0;
+	timers.soundTimer = 0;
 
 	GfxDraw(gfx);
 }
@@ -240,7 +240,7 @@ int Chip8_CPU::doCycle() {
 			BYTE x = (opcode & 0x0F00) >> 8;
 			switch (opcode & 0x00FF) {
 				case 0x07: {
-					V[x] = delay_timer;
+					V[x] = timers.delayTimer;
 					break;
 				}
 				case 0x0A: {
@@ -256,11 +256,11 @@ int Chip8_CPU::doCycle() {
 					break;
 				}
 				case 0x15: {
-					delay_timer = V[x];
+					timers.delayTimer = V[x];
 					break;
 				}
 				case 0x18: {
-					sound_timer = V[x];
+					timers.soundTimer = V[x];
 					break;
 				}
 				case 0x1E: {

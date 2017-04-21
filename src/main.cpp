@@ -81,14 +81,15 @@ void drawGfx(const array2d<BYTE, 64, 32> gfx) {
 }
 
 int DecreaseTimers(void* data) {
-	BYTE** timers = reinterpret_cast<BYTE**>(data);
+	timers_t* timers = reinterpret_cast<timers_t*>(data);
 	while (!quit) {
-		for (int i = 0; i < 2; i++) {
-			if (*timers[i] > 0) {
-				(*timers[i])--;
-			}
-			SDL_Delay(1000/60);
+		if (timers->delayTimer > 0) {
+			timers->delayTimer--;
 		}
+		if (timers->soundTimer > 0) {
+			timers->soundTimer--;
+		}
+		SDL_Delay(1000/60);
 	}
 	return 0;
 }
@@ -123,8 +124,11 @@ int main(int argc, char* argv[]) {
 	Chip8_CPU cpu;
 	cpu.GfxDraw = drawGfx;
 	cpu.init();
-	BYTE* timers[] = {&cpu.delay_timer, &cpu.sound_timer};
-	SDL_Thread *timerThread = SDL_CreateThread(DecreaseTimers, "TimerThread", reinterpret_cast<void*>(timers));
+	SDL_Thread *timerThread = SDL_CreateThread(
+		DecreaseTimers,
+		"TimerThread",
+		reinterpret_cast<void*>(&cpu.timers)
+	);
 	cpu.loadProgram(rom);
 	SDL_Event e;
 	while (!quit) {
@@ -153,7 +157,7 @@ int main(int argc, char* argv[]) {
 			std::cerr << "Error: unknown instruction" << std::endl;
 			return 1;
 		}
-		if (cpu.sound_timer > 0) {
+		if (cpu.timers.soundTimer > 0) {
 			//TODO: buzzer
 		}
 		SDL_Delay(1000/FREQUENCY);
