@@ -80,7 +80,7 @@ void drawGfx(const array2d<BYTE, 64, 32> gfx) {
 }
 
 int DecreaseTimers(void* data) {
-	timers_t* timers = reinterpret_cast<timers_t*>(data);
+	timers_t* timers = static_cast<timers_t*>(data);
 	while (!quit) {
 		if (timers->delayTimer > 0) {
 			timers->delayTimer--;
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
 	SDL_Thread *timerThread = SDL_CreateThread(
 		DecreaseTimers,
 		"TimerThread",
-		reinterpret_cast<void*>(&cpu.timers)
+		static_cast<void*>(&cpu.timers)
 	);
 	cpu.loadProgram(rom);
 	SDL_Event e;
