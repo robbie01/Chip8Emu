@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <random>
-#include <ctime>
+#include <chrono>
 #include <string>
 #include "cpu.hpp"
 
@@ -26,7 +26,9 @@ constexpr std::array<BYTE, 80> Chip8_FontSet = {
 	0xF0, 0x80, 0xF0, 0x80, 0x80	// F
 };
 
-std::mt19937 mt_rand(time(NULL));
+std::mt19937 mt_rand(
+	std::chrono::high_resolution_clock::now().time_since_epoch().count()
+);
 
 void Chip8_CPU::OnKey(BYTE index) {
 	key[index] = 1;
