@@ -20,7 +20,7 @@ target_link_libraries(Chip8Emu ${SDL2_LIBRARY})
 # selecting the build mode in their IDE
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
 	target_compile_options(Chip8Emu PUBLIC "-Wall" "-Wextra" "-pedantic")
-	target_compile_options(Chip8Emu PUBLIC "$<$<CONFIG:Debug>:-g>")
+#	target_compile_options(Chip8Emu PUBLIC "$<$<CONFIG:Debug>:-g>")
 	target_compile_options(Chip8Emu PUBLIC "$<$<CONFIG:Release>:-O2>")
 elseif (MSVC)
 	if (CMAKE_CXX_FLAGS MATCHES "/W[0-4]")

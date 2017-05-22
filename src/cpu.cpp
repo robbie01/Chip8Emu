@@ -5,6 +5,7 @@
 #include <random>
 #include <chrono>
 #include <string>
+#include <stdexcept>
 #include "cpu.hpp"
 
 constexpr std::array<BYTE, 80> Chip8_FontSet = {
@@ -213,7 +214,11 @@ int Chip8_CPU::doCycle() {
 				for (int xpix = 0; xpix < 8; xpix++) {
 					if ((pixel & (0x80 >> xpix)) != 0) {
 						if (gfx[V[x]+xpix][V[y]+yline] == 1) V[0xF] |= 1;
-						gfx[V[x]+xpix][V[y]+yline] ^= 1;
+						try {
+							gfx.at(V[x]+xpix).at(V[y]+yline) ^= 1;
+						} catch (const std::out_of_range& ex) {
+							//TODO: handle illegal access
+						}
 					}
 				}
 			}
