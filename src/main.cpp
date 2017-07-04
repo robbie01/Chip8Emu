@@ -48,14 +48,8 @@ void logSDLError() {
 std::vector<BYTE> fileToBytes(const std::string filename) {
 	std::ifstream fl(filename.c_str(), std::ios_base::in | std::ios_base::binary);
 	fl.unsetf(std::ios::skipws);
-	fl.seekg(0, std::ios::end);
-	std::ios::streampos pos = fl.tellg();
-	fl.seekg(0, std::ios::beg);
-	std::vector<BYTE> ret;
-	ret.reserve(pos);
-	ret.insert(ret.begin(),
-		std::istream_iterator<BYTE>(fl),
-		std::istream_iterator<BYTE>());
+	std::istream_iterator<BYTE> begin(fl), end;
+	std::vector<BYTE> ret(begin, end);
 	fl.close();
 	return ret;
 }
