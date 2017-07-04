@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef _CPU_HPP
+#define _CPU_HPP
+
 #include <array>
 
 using BYTE = std::uint8_t;
@@ -31,3 +35,5 @@ class Chip8_CPU {
 		void OffKey(BYTE index);
 		int doCycle();
 };
+
+#endif
