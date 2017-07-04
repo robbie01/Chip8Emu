@@ -76,8 +76,7 @@ int Chip8_CPU::doCycle() {
 					break;
 				}
 				case 0x00EE: {
-					sp--;
-					pc = stack[sp];
+					pc = stack[--sp];
 					pc += 2;
 					break;
 				}
@@ -92,8 +91,7 @@ int Chip8_CPU::doCycle() {
 			break;
 		}
 		case 0x2000: {
-			stack[sp] = pc;
-			sp++;
+			stack[sp++] = pc;
 			pc = opcode & 0x0FFF;
 			break;
 		}
