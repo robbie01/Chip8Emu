@@ -29,10 +29,10 @@ class Chip8_CPU {
 	public:
 		timers_t timers;
 		void init();
-		void loadProgram(std::vector<BYTE> game);
+		void loadProgram(std::vector<BYTE>);
 		void (*GfxDraw)(const array2d<BYTE, 64, 32>);
-		void OnKey(BYTE index);
-		void OffKey(BYTE index);
+		void OnKey(std::size_t);
+		void OffKey(std::size_t);
 		int doCycle();
 };
 
