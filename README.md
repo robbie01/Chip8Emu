@@ -8,3 +8,4 @@ TODO:
 * enclose cpu stuff in "rc8" namespace
 * refactor Chip8Cpu::OnKey to Chip8Cpu::KeyDown
 * refactor Chip8Cpu::OffKey to Chip8Cpu::KeyUp
+* maybe add some assertions
