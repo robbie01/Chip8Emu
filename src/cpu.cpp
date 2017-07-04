@@ -31,11 +31,11 @@ std::mt19937 mt_rand(
 	std::chrono::high_resolution_clock::now().time_since_epoch().count()
 );
 
-void Chip8_CPU::OnKey(BYTE index) {
+void Chip8_CPU::OnKey(std::size_t index) {
 	key[index] = 1;
 }
 
-void Chip8_CPU::OffKey(BYTE index) {
+void Chip8_CPU::OffKey(std::size_t index) {
 	key[index] = 0;
 }
 
@@ -46,10 +46,10 @@ void Chip8_CPU::init() {
 	sp = 0;
 
 	std::fill(&gfx[0][0], &gfx[0][0] + sizeof(gfx), 0); //2d array stuff
-	std::fill(key.begin(), key.end(), 0);
-	std::fill(V.begin(), V.end(), 0);
-	std::fill(stack.begin(), stack.end(), 0);
-	std::fill(memory.begin(), memory.end(), 0);
+	key.fill(0);
+	V.fill(0);
+	stack.fill(0);
+	memory.fill(0);
 
 	std::copy(Chip8_FontSet.begin(), Chip8_FontSet.end(), memory.begin());
 
@@ -60,8 +60,7 @@ void Chip8_CPU::init() {
 }
 
 void Chip8_CPU::loadProgram(std::vector<BYTE> game) {
-	for (unsigned long i = 0; i < game.size(); i++)
-		memory[i + 512] = game[i];
+	std::copy(game.begin(), game.end(), memory.begin() + 512);
 }
 
 int Chip8_CPU::doCycle() {
@@ -281,11 +280,11 @@ int Chip8_CPU::doCycle() {
 					break;
 				}
 				case 0x55: {
-					for (int i = 0; i <= x; ++i) memory[I+i] = V[i];
+					std::copy_n(V.begin(), x, memory.begin() + I);
 					break;
 				}
 				case 0x65: {
-					for (int i = 0; i <= x; ++i) V[i] = memory[I+i];
+					std::copy_n(memory.begin() + I, x, V.begin());
 					break;
 				}
 			}

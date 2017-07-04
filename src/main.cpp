@@ -37,8 +37,6 @@ constexpr int FREQUENCY = 400;
 
 bool quit = false;
 
-//SDL_Window *win;
-//SDL_Surface *sfc;
 SDL_Renderer *ren;
 
 void logSDLError() {
@@ -59,17 +57,14 @@ void drawGfx(const array2d<BYTE, 64, 32> gfx) {
 		for (int y = 0; y < 32; y++) {
 			SDL_Rect pix = {x * PIXEL_SIZE, y * PIXEL_SIZE, PIXEL_SIZE, PIXEL_SIZE};
 			if(gfx[x][y] == 1) {
-				//SDL_FillRect(sfc, &pix, SDL_MapRGB(sfc->format, 0xFF, 0xFF, 0xFF));
 				SDL_SetRenderDrawColor(ren, 0xFF, 0xFF, 0xFF, 0xFF);
 			}
 			else {
-				//SDL_FillRect(sfc, &pix, SDL_MapRGB(sfc->format, 0x00, 0x00, 0x00));
 				SDL_SetRenderDrawColor(ren, 0x00, 0x00, 0x00, 0xFF);
 			}
 			SDL_RenderFillRect(ren, &pix);
 		}
 	}
-	//SDL_UpdateWindowSurface(win);
 	SDL_RenderPresent(ren);
 }
 
@@ -105,9 +100,8 @@ int main(int argc, char* argv[]) {
 		SDL_Quit();
 		return 1;
 	}
-	//sfc = SDL_GetWindowSurface(win);
 	ren = SDL_CreateRenderer(win, -1, 0);
-	if ( /* sfc */ ren == nullptr) {
+	if (ren == nullptr) {
 		SDL_DestroyWindow(win);
 		logSDLError();
 		SDL_Quit();
