@@ -59,7 +59,7 @@ void Chip8_CPU::init() {
 	GfxDraw(gfx);
 }
 
-void Chip8_CPU::loadProgram(std::vector<BYTE> game) {
+void Chip8_CPU::loadProgram(const std::vector<BYTE>& game) {
 	std::copy(game.begin(), game.end(), memory.begin() + 512);
 }
 
