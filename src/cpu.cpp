@@ -45,7 +45,7 @@ void Chip8_CPU::init() {
 	I = 0;
 	sp = 0;
 
-	std::fill(&gfx[0][0], &gfx[0][0] + sizeof(gfx), 0); //2d array stuff
+	gfx.fill(std::array<BYTE, 32>{0});
 	key.fill(0);
 	V.fill(0);
 	stack.fill(0);
@@ -69,7 +69,7 @@ int Chip8_CPU::doCycle() {
 		case 0x0000: {
 			switch (opcode) {
 				case 0x00E0: {
-					std::fill(&gfx[0][0], &gfx[0][0] + sizeof(gfx), 0);
+					gfx.fill(std::array<BYTE, 32>{0});
 					GfxDraw(gfx);
 					pc += 2;
 					break;
