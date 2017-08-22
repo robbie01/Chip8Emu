@@ -27,9 +27,8 @@ constexpr std::array<BYTE, 80> Chip8_FontSet = {
 	0xF0, 0x80, 0xF0, 0x80, 0x80	// F
 };
 
-std::mt19937 mt_rand(
-	std::chrono::high_resolution_clock::now().time_since_epoch().count()
-);
+std::mt19937 mt_rand(std::random_device{}());
+std::uniform_int_distribution<std::mt19937::result_type> dist256(0, 255);
 
 void Chip8_CPU::OnKey(std::size_t index) {
 	key[index] = 1;
@@ -196,7 +195,7 @@ int Chip8_CPU::doCycle() {
 		case 0xC000: {
 			BYTE x = (opcode & 0x0F00) >> 8;
 			BYTE val = opcode & 0x00FF;
-			V[x] = (mt_rand() % 256) & val;
+			V[x] = (dist256(mt_rand)) & val;
 			pc += 2;
 			break;
 		}
