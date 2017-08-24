@@ -30,7 +30,7 @@ class Chip8_CPU {
 		timers_t timers;
 		void init();
 		void loadProgram(const std::vector<BYTE>&);
-		void (*GfxDraw)(const array2d<BYTE, 64, 32>);
+		void (*GfxDraw)(const array2d<BYTE, 64, 32>&);
 		void OnKey(std::size_t);
 		void OffKey(std::size_t);
 		int doCycle();
