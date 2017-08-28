@@ -116,6 +116,7 @@ int main(int argc, char* argv[]) {
 		"TimerThread",
 		static_cast<void*>(&cpu.timers)
 	);
+	(void)timerThread;
 	cpu.loadProgram(rom);
 	SDL_Event e;
 	while (!quit) {
